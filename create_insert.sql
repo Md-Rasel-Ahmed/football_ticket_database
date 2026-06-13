@@ -1,12 +1,5 @@
 CREATE DATABASE football_ticket
 
--- =========================================================================
--- SYSTEM: Football Ticket Booking System Database Setup Template
--- DESCRIPTION: Pseudo-DDL Template for Table Creation & Data Insertion
--- INSTRUCTIONS: Replace 'TYPE' and the constraint placeholders with your own
---               actual data types, relational keys, and check criteria.
--- =========================================================================
-
 -- DROP TABLES IF THEY ALREADY EXIST TO PREVENT CONFLICTS
 DROP TABLE IF EXISTS Bookings;
 
@@ -30,7 +23,6 @@ CREATE TABLE Users (
     phone_number VARCHAR(50)
 );
 
-DROP TABLE Users
 -- =========================================================================
 -- 2. CREATE MATCHES TABLE
 -- =========================================================================
@@ -50,7 +42,6 @@ CREATE TABLE Matches (
     )
 );
 
-DROP TABLE matches
 -- =========================================================================
 -- 3. CREATE BOOKINGS TABLE
 -- =========================================================================
@@ -68,10 +59,9 @@ CREATE TABLE Bookings (
             'Refunded'
         )
     ),
-    total_cost INT CHECK (total_cost > 0) NOT NULL
+    total_cost INT CHECK (total_cost > 0) NOT NULL,
+    CONSTRAINT unique_match_seat UNIQUE (match_id, seat_number)
 );
-
-DROP TABLE bookings
 
 -- =========================================================================
 -- DATA SEEDING: INSERT SAMPLE DATA INTO USERS
