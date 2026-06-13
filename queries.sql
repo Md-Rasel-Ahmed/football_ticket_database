@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS Matches;
 DROP TABLE IF EXISTS Users;
 
 -- =========================================================================
--- 1. CREATE USERS TABLE
+-- 1. CREATE ALL TABLES
 -- =========================================================================
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
@@ -27,76 +27,82 @@ CREATE TABLE Users (
             'Football Fan'
         )
     ),
-    phone_number INT NOT NULL
+    phone_number VARCHAR(50)
 );
 
+DROP TABLE Users
 -- =========================================================================
 -- 2. CREATE MATCHES TABLE
 -- =========================================================================
-CREATE TABLE Matches (
-    match_id TYPE,
-    fixture TYPE,
-    tournament_category TYPE,
-    base_ticket_price TYPE,
-    match_status TYPE,
 
--- Write your constraint to make 'match_id' the Primary Key
--- Write your check constraint to prevent negative ticket prices
--- Write your check constraint to restrict 'match_status' values
+CREATE TABLE Matches (
+    match_id SERIAL PRIMARY KEY,
+    fixture VARCHAR(255) NOT NULL,
+    tournament_category VARCHAR(255) NOT NULL,
+    base_ticket_price INT NOT NULL CHECK (base_ticket_price > 0),
+    match_status VARCHAR(255) NOT NULL CHECK (
+        match_status IN (
+            'Available',
+            'Selling Fast',
+            'Sold Out',
+            'Postponed'
+        )
+    )
 );
 
+DROP TABLE matches
 -- =========================================================================
 -- 3. CREATE BOOKINGS TABLE
 -- =========================================================================
-CREATE TABLE Bookings (
-    booking_id TYPE,
-    user_id TYPE,
-    match_id TYPE,
-    seat_number TYPE,
-    payment_status TYPE,
-    total_cost TYPE,
 
--- Write your constraint to make 'booking_id' the Primary Key
--- Write your Foreign Key constraint linking 'user_id' to the Users table
--- Write your Foreign Key constraint linking 'match_id' to the Matches table
--- Write your check constraint to ensure 'total_cost' is non-negative
--- Write your check constraint to restrict 'payment_status' values
+CREATE TABLE Bookings (
+    booking_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES Users (user_id) NOT NULL,
+    match_id INT REFERENCES Matches (match_id) NOT NULL,
+    seat_number VARCHAR(50),
+    payment_status VARCHAR(255) CHECK (
+        payment_status IN (
+            'Pending',
+            'Confirmed',
+            'Cancelled',
+            'Refunded'
+        )
+    ),
+    total_cost INT CHECK (total_cost > 0) NOT NULL
 );
+
+DROP TABLE bookings
 
 -- =========================================================================
 -- DATA SEEDING: INSERT SAMPLE DATA INTO USERS
 -- =========================================================================
+
 INSERT INTO
     Users (
-        user_id,
         full_name,
         email,
         role,
         phone_number
     )
 VALUES (
-        1,
         'Tanvir Rahman',
         'tanvir@mail.com',
         'Football Fan',
         '+8801711111111'
     ),
     (
-        2,
         'Asif Haque',
         'asif@mail.com',
         'Football Fan',
         '+8801722222222'
     ),
     (
-        3,
         'Sajjad Rahman',
         'sajjad@mail.com',
         'Ticket Manager',
         '+8801733333333'
     ),
     (
-        4,
         'Jannat Ara',
         'jannat@mail.com',
         'Football Fan',
@@ -106,6 +112,7 @@ VALUES (
 -- =========================================================================
 -- DATA SEEDING: INSERT SAMPLE DATA INTO MATCHES
 -- =========================================================================
+
 INSERT INTO
     Matches (
         match_id,
@@ -153,9 +160,9 @@ VALUES (
 -- =========================================================================
 -- DATA SEEDING: INSERT SAMPLE DATA INTO BOOKINGS
 -- =========================================================================
+
 INSERT INTO
     Bookings (
-        booking_id,
         user_id,
         match_id,
         seat_number,
@@ -163,7 +170,6 @@ INSERT INTO
         total_cost
     )
 VALUES (
-        501,
         1,
         101,
         'A-12',
@@ -171,7 +177,6 @@ VALUES (
         150.00
     ),
     (
-        502,
         1,
         102,
         'B-04',
@@ -179,23 +184,14 @@ VALUES (
         120.00
     ),
     (
-        503,
         2,
         101,
         'A-13',
         'Confirmed',
         150.00
     ),
+    (2, 101, NULL, NULL, 150.00),
     (
-        504,
-        2,
-        101,
-        NULL,
-        NULL,
-        150.00
-    ),
-    (
-        505,
         3,
         102,
         'C-20',
